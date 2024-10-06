@@ -349,6 +349,13 @@ print("Génération et ajustement des données... 2")
 Critiques, recommended_film = adjust_data_for_common_recommendation(Critiques, similarity_functions)
 print("Génération et ajustement des données... 3")
 
+while recommended_film is None :
+    print("Re-Génération et ajustement des données... 1")
+    Critiques = generate_data_with_constraints()
+    print("Re-Génération et ajustement des données... 2")
+    Critiques, recommended_film = adjust_data_for_common_recommendation(Critiques, similarity_functions)
+    print("Génération et ajustement des données... 3")
+
 
 # Vérification et affichage des résultats
 nouveau_critique = "NouveauCritique"

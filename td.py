@@ -1,4 +1,5 @@
 import math
+import openpyxl
 import random
 
 critiques = {
@@ -14,7 +15,6 @@ critiques = {
 films_to_recommend = ["Snakes", "Superman", "Night"]
 films = [f"Film{i}" for i in range(1, 21)]  # 20 films
 critiquesModified = [f"Critique{i}" for i in range(1, 16)]  # 15 critiques
-
 
 
 # 2(a)(i)
@@ -34,12 +34,13 @@ def sim_distanceEuclidienne(person1, person2):
         return 0
 
     sum_of_squares = sum([(person1[film] - person2[film])
-                         ** 2 for film in common_films])
+                          ** 2 for film in common_films])
     return math.sqrt(sum_of_squares)
 
 
 print(sim_distanceEuclidienne(
     critiques['Lisa Rose'], critiques['Gene Seymour']))
+
 
 # 2(a)(ii)
 
@@ -54,12 +55,13 @@ def computeNearestNeighborM(nouveauCritique, Critiques):
     distances.sort()
     return distances
 
+
 def computeNearestNeighborE(nouveauCritique, Critiques):
     distances = []
     for critique in Critiques:
         if critique != nouveauCritique:
             distance = sim_distanceEuclidienne(Critiques[critique],
-                                             Critiques[nouveauCritique])
+                                               Critiques[nouveauCritique])
             distances.append((distance, critique))
     distances.sort()
     return distances
@@ -78,6 +80,7 @@ def recommendM(nouveauCritique, Critiques):
 
     return sorted(recommendations, key=lambda x: x[1], reverse=True)
 
+
 def recommendE(nouveauCritique, Critiques):
     # retourner le voisin le plus proche de 'nouveauCritique'
     nearest = computeNearestNeighborE(nouveauCritique, Critiques)[0][1]
@@ -90,6 +93,7 @@ def recommendE(nouveauCritique, Critiques):
             recommendations.append((film, Critiques[nearest][film]))
 
     return sorted(recommendations, key=lambda x: x[1], reverse=True)
+
 
 # 2(b)(i)
 
@@ -107,7 +111,7 @@ def calculate_score_poids_normal(film, nouveauCritique, Critiques):
     return total / sim_sum if sim_sum > 0 else 0
 
 
-def Bestrecommend(nouveauCritique, Critiques,films_to_recommend):
+def Bestrecommend(nouveauCritique, Critiques, films_to_recommend):
     scores = [(film, calculate_score_poids_normal(film, nouveauCritique, critiques))
               for film in films_to_recommend if film not in Critiques[nouveauCritique]]
     if not scores:
@@ -124,13 +128,13 @@ def calculate_score_poids_square(film, nouveauCritique, Critiques):
         if critique != nouveauCritique and film in Critiques[critique]:
             distance = sim_distanceManhattan(
                 Critiques[critique], Critiques[nouveauCritique])
-            weight = 1 / (1 + distance**2)  # poids square
+            weight = 1 / (1 + distance ** 2)  # poids square
             total += weight * Critiques[critique][film]
             sim_sum += weight
     return total / sim_sum if sim_sum > 0 else 0
 
 
-def OtherBestrec(nouveauCritique, Critiques,films_to_recommend):
+def OtherBestrec(nouveauCritique, Critiques, films_to_recommend):
     scores = [(film, calculate_score_poids_square(film, nouveauCritique, critiques))
               for film in films_to_recommend if film not in Critiques[nouveauCritique]]
     if not scores:
@@ -139,34 +143,34 @@ def OtherBestrec(nouveauCritique, Critiques,films_to_recommend):
     # Retourne le nom du film avec le score le plus élevé
     return max(scores, key=lambda x: x[1])[0]
 
+
 def pearson(person1, person2):
-    sum_xy=0
-    sum_x=0
-    sum_y=0
-    sum_x2=0
-    sum_y2=0
-    n=0
+    sum_xy = 0
+    sum_x = 0
+    sum_y = 0
+    sum_x2 = 0
+    sum_y2 = 0
+    n = 0
     common_films = [film for film in person1 if film in person2]
     n = len(common_films)
-    
-    if n ==0 : 
+
+    if n == 0:
         return 0
     for key in person1:
         if key in person2:
             n += 1
-            x=person1[key]
-            y=person2[key]
-            sum_xy +=x*y
+            x = person1[key]
+            y = person2[key]
+            sum_xy += x * y
             sum_x += x
             sum_y += y
-            sum_x2 += x**2
-            sum_y2 += y**2
-    denominator = math.sqrt(sum_x2 - (sum_x**2) / n) * math.sqrt(sum_y2 - (sum_y**2) / n)
+            sum_x2 += x ** 2
+            sum_y2 += y ** 2
+    denominator = math.sqrt(sum_x2 - (sum_x ** 2) / n) * math.sqrt(sum_y2 - (sum_y ** 2) / n)
     if denominator == 0:
         return 0
     else:
-        return (sum_xy - (sum_x * sum_y) /n ) / denominator
-
+        return (sum_xy - (sum_x * sum_y) / n) / denominator
 
 
 def calculate_score_pearson(film, nouveauCritique, Critiques):
@@ -181,7 +185,7 @@ def calculate_score_pearson(film, nouveauCritique, Critiques):
     return total / sim_sum if sim_sum > 0 else 0
 
 
-def PearsonRecommend(nouveauCritique, Critiques,films_to_recommend):
+def PearsonRecommend(nouveauCritique, Critiques, films_to_recommend):
     scores = [(film, calculate_score_pearson(film, nouveauCritique, Critiques))
               for film in films_to_recommend if film not in Critiques[nouveauCritique]]
 
@@ -199,8 +203,8 @@ def cosinus_similarity(person1, person2):
         return 0
 
     sum_xy = sum([person1[film] * person2[film] for film in common_films])
-    sum_x2 = sum([person1[film]**2 for film in common_films])
-    sum_y2 = sum([person2[film]**2 for film in common_films])
+    sum_x2 = sum([person1[film] ** 2 for film in common_films])
+    sum_y2 = sum([person2[film] ** 2 for film in common_films])
 
     return sum_xy / (math.sqrt(sum_x2) * math.sqrt(sum_y2))
 
@@ -217,13 +221,14 @@ def calculate_score_cosinus(film, nouveauCritique, Critiques):
     return total / sim_sum if sim_sum > 0 else 0
 
 
-def CosinusRecommend(nouveauCritique, Critiques,films_to_recommend):
+def CosinusRecommend(nouveauCritique, Critiques, films_to_recommend):
     scores = [(film, calculate_score_cosinus(film, nouveauCritique, Critiques))
               for film in films_to_recommend if film not in Critiques[nouveauCritique]]
     if not scores:
         return None  # Aucune recommandation possible
     # Retourne le nom du film avec le score le plus élevé
     return max(scores, key=lambda x: x[1])[0]
+
 
 def calculate_score_jaccard(film, nouveauCritique, Critiques):
     scores = []
@@ -235,6 +240,7 @@ def calculate_score_jaccard(film, nouveauCritique, Critiques):
             scores.append(similarity * Critiques[critique][film])
     return sum(scores) / len(scores) if scores else 0
 
+
 def JaccardRecommend(nouveauCritique, Critiques, films_to_recommend):
     scores = [(film, calculate_score_jaccard(film, nouveauCritique, Critiques))
               for film in films_to_recommend if film not in Critiques[nouveauCritique]]
@@ -242,6 +248,7 @@ def JaccardRecommend(nouveauCritique, Critiques, films_to_recommend):
         return None  # Aucune recommandation possible
     # Retourne le nom du film avec le score le plus élevé
     return max(scores, key=lambda x: x[1])[0]
+
 
 def calculate_score_dice(film, nouveauCritique, Critiques):
     scores = []
@@ -253,6 +260,7 @@ def calculate_score_dice(film, nouveauCritique, Critiques):
             scores.append(similarity * Critiques[critique][film])
     return sum(scores) / len(scores) if scores else 0
 
+
 def DiceRecommend(nouveauCritique, Critiques, films_to_recommend):
     scores = [(film, calculate_score_dice(film, nouveauCritique, Critiques))
               for film in films_to_recommend if film not in Critiques[nouveauCritique]]
@@ -261,14 +269,17 @@ def DiceRecommend(nouveauCritique, Critiques, films_to_recommend):
     # Retourne le nom du film avec le score le plus élevé
     return max(scores, key=lambda x: x[1])[0]
 
-print(recommendE('Anne',critiques))
-print(Bestrecommend('Anne', critiques,films_to_recommend))
-print(OtherBestrec('Anne', critiques,films_to_recommend))
-print(PearsonRecommend('Anne', critiques,films_to_recommend))
-print(CosinusRecommend('Anne', critiques,films_to_recommend))
+
+print(recommendE('Anne', critiques))
+print(Bestrecommend('Anne', critiques, films_to_recommend))
+print(OtherBestrec('Anne', critiques, films_to_recommend))
+print(PearsonRecommend('Anne', critiques, films_to_recommend))
+print(CosinusRecommend('Anne', critiques, films_to_recommend))
+
+similarity_functions = [Bestrecommend, OtherBestrec, PearsonRecommend, CosinusRecommend, JaccardRecommend,
+                        DiceRecommend]
 
 
-similarity_functions = [Bestrecommend,OtherBestrec,PearsonRecommend,CosinusRecommend,JaccardRecommend,DiceRecommend]
 def recommend(nouveauCritique, Critiques, similar_func):
     # For recommendE and recommendM
     if similar_func in [recommendE, recommendM]:
@@ -276,11 +287,14 @@ def recommend(nouveauCritique, Critiques, similar_func):
         return recommendations[0][0] if recommendations else None
 
     # For Bestrecommend, OtherBestrec, PearsonRecommend, CosinusRecommend
-    elif similar_func in [Bestrecommend, OtherBestrec, PearsonRecommend, CosinusRecommend, JaccardRecommend, DiceRecommend]:
+    elif similar_func in [Bestrecommend, OtherBestrec, PearsonRecommend, CosinusRecommend, JaccardRecommend,
+                          DiceRecommend]:
         # These functions expect a third argument films_to_recommend
         # Generate it here
         films_to_recommend = [film for film in films if film not in Critiques[nouveauCritique]]
         return similar_func(nouveauCritique, Critiques, films_to_recommend)
+
+
 def pourcentagecasesvides(Critiques):
     total_cases = len(Critiques) * len(films)
     cases_remplies = sum(len(critique) for critique in Critiques.values())
@@ -306,15 +320,17 @@ def generate_data_with_constraints():
         if 30 <= pourcentagecasesvides(Critiques) <= 60:
             return Critiques
 
+
 def find_common_recommendation(Critiques, similarity_functions):
     nouveau_critique = "NouveauCritique"
     films_non_vus = [film for film in films if film not in Critiques[nouveau_critique]]
-    
+
     for film in films_non_vus:
         if all(recommend(nouveau_critique, Critiques, func) == film for func in similarity_functions):
             return film
-    
+
     return None
+
 
 # Adjust data for common recommendation with additional debug prints
 # Adjust data for common recommendation with a maximum iteration limit
@@ -349,13 +365,12 @@ print("Génération et ajustement des données... 2")
 Critiques, recommended_film = adjust_data_for_common_recommendation(Critiques, similarity_functions)
 print("Génération et ajustement des données... 3")
 
-while recommended_film is None :
+while recommended_film is None:
     print("Re-Génération et ajustement des données... 1")
     Critiques = generate_data_with_constraints()
     print("Re-Génération et ajustement des données... 2")
     Critiques, recommended_film = adjust_data_for_common_recommendation(Critiques, similarity_functions)
     print("Génération et ajustement des données... 3")
-
 
 # Vérification et affichage des résultats
 nouveau_critique = "NouveauCritique"
@@ -371,3 +386,52 @@ print(f"Film recommandé : {recommended_film}")
 recommendations = [recommend(nouveau_critique, Critiques, func) for func in similarity_functions]
 print(f"Toutes les recommandations sont identiques : {len(set(recommendations)) == 1}")
 print(f"Recommandations : {recommendations}")
+
+
+def export_data_to_excel(Critiques, recommended_film, filename='adjusted_data.xlsx'):
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Critiques"
+
+    # Write header
+    ws.append(['Critique', 'Film', 'Rating'])
+
+    # Write data
+    for critique, films in Critiques.items():
+        for film, rating in films.items():
+            ws.append([critique, film, rating])
+
+    # Write recommended film
+    ws.append(['Recommended Film', recommended_film])
+
+    wb.save(filename)
+    print(f"Data exported to {filename}")
+
+
+def import_data_from_excel(filename='adjusted_data.xlsx'):
+    wb = openpyxl.load_workbook(filename)
+    ws = wb.active
+
+    Critiques = {}
+    recommended_film = None
+
+    for row in ws.iter_rows(min_row=2, values_only=True):
+        if row[0] == 'Recommended Film':
+            recommended_film = row[1]
+        else:
+            critique, film, rating = row
+            if critique not in Critiques:
+                Critiques[critique] = {}
+            Critiques[critique][film] = rating
+
+    print(f"Data imported from {filename}")
+    return Critiques, recommended_film
+
+
+# Example usage:
+# Serialize and export the data
+Critiques, recommended_film = adjust_data_for_common_recommendation(Critiques, similarity_functions)
+export_data_to_excel(Critiques, recommended_film)
+
+# Later, to import the data
+Critiques, recommended_film = import_data_from_excel()

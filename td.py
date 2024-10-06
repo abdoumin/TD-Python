@@ -270,19 +270,17 @@ print(CosinusRecommend('Anne', critiques,films_to_recommend))
 
 similarity_functions = [Bestrecommend,OtherBestrec,PearsonRecommend,CosinusRecommend,JaccardRecommend,DiceRecommend]
 def recommend(nouveauCritique, Critiques, similar_func):
-    # Pour recommendE et recommendM
+    # For recommendE and recommendM
     if similar_func in [recommendE, recommendM]:
         recommendations = similar_func(nouveauCritique, Critiques)
         return recommendations[0][0] if recommendations else None
-    
-    # Pour Bestrecommend, OtherBestrec, PearsonRecommend, CosinusRecommend
-    elif similar_func in [Bestrecommend, OtherBestrec, PearsonRecommend, CosinusRecommend]:
-        # Ces fonctions attendent un troisième argument films_to_recommend
-        # Nous devons le générer ici
-        films_to_recommend = [film for film in Critiques[list(Critiques.keys())[0]] 
-                              if film not in Critiques[nouveauCritique]]
-        return similar_func(nouveauCritique, Critiques, films_to_recommend)
 
+    # For Bestrecommend, OtherBestrec, PearsonRecommend, CosinusRecommend
+    elif similar_func in [Bestrecommend, OtherBestrec, PearsonRecommend, CosinusRecommend, JaccardRecommend, DiceRecommend]:
+        # These functions expect a third argument films_to_recommend
+        # Generate it here
+        films_to_recommend = [film for film in films if film not in Critiques[nouveauCritique]]
+        return similar_func(nouveauCritique, Critiques, films_to_recommend)
 def pourcentagecasesvides(Critiques):
     total_cases = len(Critiques) * len(films)
     cases_remplies = sum(len(critique) for critique in Critiques.values())
@@ -318,27 +316,44 @@ def find_common_recommendation(Critiques, similarity_functions):
     
     return None
 
-def adjust_data_for_common_recommendation(Critiques, similarity_functions):
-    while True:
+# Adjust data for common recommendation with additional debug prints
+# Adjust data for common recommendation with a maximum iteration limit
+# Adjust data for common recommendation with additional debug prints
+# Adjust data for common recommendation with additional debug prints
+def adjust_data_for_common_recommendation(Critiques, similarity_functions, max_iterations=1000):
+    iteration = 0
+    while iteration < max_iterations:
+        iteration += 1
+        print(f"Iteration: {iteration}")
         common_recommendation = find_common_recommendation(Critiques, similarity_functions)
         if common_recommendation:
+            print(f"Common recommendation found: {common_recommendation}")
             return Critiques, common_recommendation
 
-        # Si pas de recommandation commune, ajuster légèrement les données
+        # If no common recommendation, adjust the data slightly
         target_film = random.choice([film for film in films if film not in Critiques["NouveauCritique"]])
+        print(f"Adjusting data for target film: {target_film}")
         for critique in Critiques:
             if critique != "NouveauCritique" and target_film in Critiques[critique]:
-                Critiques[critique][target_film] = round(random.uniform(4.5, 5), 1)  # Favoriser ce film
+                Critiques[critique][target_film] = round(random.uniform(4.5, 5), 1)  # Favor this film
+                print(f"Adjusted {critique}'s rating for {target_film} to {Critiques[critique][target_film]}")
 
+    print("Maximum iterations reached without finding a common recommendation.")
+    return Critiques, None  # Return None if no common recommendation is found within the limit
 
 
 # Génération et ajustement des données
+print("Génération et ajustement des données... 1")
 Critiques = generate_data_with_constraints()
+print("Génération et ajustement des données... 2")
 Critiques, recommended_film = adjust_data_for_common_recommendation(Critiques, similarity_functions)
+print("Génération et ajustement des données... 3")
+
 
 # Vérification et affichage des résultats
 nouveau_critique = "NouveauCritique"
 films_vus = len(Critiques[nouveau_critique])
+
 pourcentage_vide = pourcentagecasesvides(Critiques)
 
 print(f"Nombre de films vus par le nouveau critique : {films_vus}")

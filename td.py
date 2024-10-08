@@ -2,6 +2,7 @@ import math
 import openpyxl
 import random
 
+#1.
 critiques = {
     'Lisa Rose': {'Lady': 2.5, 'Snakes': 3.5, 'Luck': 3.0, 'Superman': 3.5, 'Dupree': 2.5, 'Night': 3.0},
     'Gene Seymour': {'Lady': 3.0, 'Snakes': 3.5, 'Luck': 1.5, 'Superman': 5.0, 'Dupree': 3.5, 'Night': 3.0},
@@ -38,7 +39,7 @@ def sim_distanceEuclidienne(person1, person2):
     return math.sqrt(sum_of_squares)
 
 
-print(sim_distanceEuclidienne(
+print("La Distance Euclidienne entre LISA et GENE est :",sim_distanceEuclidienne(
     critiques['Lisa Rose'], critiques['Gene Seymour']))
 
 
@@ -94,10 +95,9 @@ def recommendE(nouveauCritique, Critiques):
 
     return sorted(recommendations, key=lambda x: x[1], reverse=True)
 
+print("Les recommendations pour TOBY selon la distance euclidienne", recommendE("Toby", critiques) )
 
-# 2(b)(i)
-
-
+# 2(b)
 def calculate_score_poids_normal(film, nouveauCritique, Critiques):
     total = 0
     sim_sum = 0
@@ -119,7 +119,7 @@ def Bestrecommend(nouveauCritique, Critiques, films_to_recommend):
 
     # Retourne le nom du film avec le score le plus élevé
     return max(scores, key=lambda x: x[1])[0]
-
+print(" Le film recommandé à Anne selon la méthode score global est", Bestrecommend("Anne", critiques, films_to_recommend))
 
 def calculate_score_poids_square(film, nouveauCritique, Critiques):
     total = 0
@@ -138,12 +138,12 @@ def OtherBestrec(nouveauCritique, Critiques, films_to_recommend):
     scores = [(film, calculate_score_poids_square(film, nouveauCritique, critiques))
               for film in films_to_recommend if film not in Critiques[nouveauCritique]]
     if not scores:
-        return None  # Aucune recommandation possible
-
-    # Retourne le nom du film avec le score le plus élevé
+        return None
     return max(scores, key=lambda x: x[1])[0]
 
+print(" Le film recommandé à Anne en utilisant un poids différent est", OtherBestrec("Anne", critiques, films_to_recommend))
 
+#3)
 def pearson(person1, person2):
     sum_xy = 0
     sum_x = 0
@@ -194,7 +194,7 @@ def PearsonRecommend(nouveauCritique, Critiques, films_to_recommend):
 
     # Retourne le nom du film avec le score le plus élevé
     return max(scores, key=lambda x: x[1])[0]
-
+print(" Le film recommandé à Anne en utilisant  Le coefficient de Pearson est", PearsonRecommend("Anne", critiques, films_to_recommend))
 
 def cosinus_similarity(person1, person2):
     common_films = [film for film in person1 if film in person2]

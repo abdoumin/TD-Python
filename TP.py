@@ -576,8 +576,8 @@ recommandations = {
     "Euclidienne": recommandation_euclidienne,
     "Pearson": recommandation_pearson,
     "Cosinus": recommandation_cosinus,
-    "BestRecommend": recommandation_BestRecommend,
-    "OtherBestRecommend": recommandation_OtherBestRecommend
+    "BestRecommend": recommandation_bestrecommend,
+    "OtherBestRecommend": recommandation_otherbestrecommend
 }
 export_data_to_excel(matrice_critique, recommandations, utilisateur_cible,"recommandation-differentes")
 

@@ -522,65 +522,7 @@ print("\nExplication pour l'utilisateur :")
 print(explication)
 
 
-
-# Générer des films et critiques
-films = [f'Film_{i}' for i in range(1, 21)]
-critiques = [f'Critique_{i}' for i in range(1, 16)]
-
-# Générer un tableau d'évaluations aléatoires avec entre 30% et 60% de cases vides
-
-utilisateur_cible = 'Critique_15'
-
-def generer_matrice_critique(films, critiques, utilisateur_cible, min_vide=0.3, max_vide=0.6):
-    mat = {}
-    for critique in critiques:
-        mat[critique] = {}
-        if critique == utilisateur_cible:
-            # For the target user, randomly select up to 10 films to rate
-            films_to_rate = random.sample(films, min(10, len(films)))
-            for film in films:
-                if film in films_to_rate:
-                    mat[critique][film] = round(random.uniform(1, 5), 1)  # Note entre 1 et 5
-                else:
-                    mat[critique][film] = None
-        else:
-            # For other critics, use the original logic
-            for film in films:
-                if random.random() > random.uniform(min_vide, max_vide):
-                    mat[critique][film] = round(random.uniform(1, 5), 1)  # Note entre 1 et 5
-                else:
-                    mat[critique][film] = None
-    return mat
-
-# Calculer le pourcentage de cases vides
-def pourcentagecasesvides(matrice):
-    total_cases = len(matrice) * len(next(iter(matrice.values())))  # Nombre total de cases
-    cases_vides = sum(1 for critique in matrice for film in matrice[critique] if matrice[critique][film] is None)  # Cases vides
-    return (cases_vides / total_cases) * 100
-
-# Fonction pour recommander des films basés sur une méthode de similarité
-def recommander_film(nouveauCritique, critiques, methode_similarite):
-    totals = {}
-    sim_sums = {}
-    for critique in critiques:
-        if critique == nouveauCritique:
-            continue
-        similarity = methode_similarite(critiques[critique], critiques[nouveauCritique])
-        if similarity <= 0:
-            continue
-        for film in critiques[critique]:
-            # Vérifier si la note n'est pas None
-            if critiques[critique][film] is not None and critiques[nouveauCritique][film] is None:
-                if film not in totals:
-                    totals[film] = 0
-                totals[film] += critiques[critique][film] * similarity
-                if film not in sim_sums:
-                    sim_sums[film] = 0
-                sim_sums[film] += similarity
-    rankings = [(total / sim_sums[film], film) for film, total in totals.items()]
-    rankings.sort(reverse=True)
-    return rankings
-
+#(6)
 
 # Fonction pour vérifier si toutes les recommandations sont différentes
 def recommendations_differentes(recommandations):
@@ -628,7 +570,6 @@ print("Recommandation (Pearson):", recommandation_pearson[0])
 print("Recommandation (Cosinus):", recommandation_cosinus[0])
 print("Recommandation (BestRecommend):", recommandation_bestrecommend[0])
 print("Recommandation (OtherBestRecommend):", recommandation_otherbestrecommend[0])
-print(matrice_critique[utilisateur_cible])
 
 recommandations = {
     "Manhattan": recommandation_manhattan,

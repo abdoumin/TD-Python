@@ -216,12 +216,23 @@ def pearson(person1, person2):
             sum_y += y
             sum_x2 += x ** 2
             sum_y2 += y ** 2
-    denominator = math.sqrt(sum_x2 - (sum_x ** 2) / n) * \
-                  math.sqrt(sum_y2 - (sum_y ** 2) / n)
-    if denominator == 0:
+    try:
+        denominator_x = sum_x2 - (sum_x ** 2) / n
+        denominator_y = sum_y2 - (sum_y ** 2) / n
+
+        # Check if the values under the square root are non-negative
+        if denominator_x < 0 or denominator_y < 0:
+            return 0
+
+        denominator = math.sqrt(denominator_x) * math.sqrt(denominator_y)
+
+        if denominator == 0:
+            return 0
+        else:
+            return (sum_xy - (sum_x * sum_y) / n) / denominator
+    except (ValueError, ZeroDivisionError):
+        # This catches any remaining math errors
         return 0
-    else:
-        return (sum_xy - (sum_x * sum_y) / n) / denominator
 
 
 def PearsonRecommend(nouveauCritique, critiques):
@@ -601,4 +612,10 @@ recommandations = {
     "BestRecommend": recommandation_bestrecommend,
     "OtherBestRecommend": recommandation_otherbestrecommend
 }
+# Génération d'une explication simple pour l'un des films recommandés
+film_recommande = recommandation_manhattan[0][1]
+explication = explication_simple(film_recommande)
+print("\nExplication pour l'utilisateur :")
+print(explication)
+
 export_data_to_excel(matrice_critique, recommandations, utilisateur_cible, "recommandation-differentes")

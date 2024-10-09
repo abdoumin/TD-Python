@@ -4,9 +4,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment
 import random
 
-
-
-#(1)
+# (1)
 critiques = {
     'Lisa Rose': {'Lady': 2.5, 'Snakes': 3.5, 'Luck': 3.0, 'Superman': 3.5, 'Dupree': 2.5, 'Night': 3.0},
     'Gene Seymour': {'Lady': 3.0, 'Snakes': 3.5, 'Luck': 1.5, 'Superman': 5.0, 'Dupree': 3.5, 'Night': 3.0},
@@ -20,7 +18,8 @@ critiques = {
 
 import math
 
-#2(a)(i)
+
+# 2(a)(i)
 def sim_distanceManhattan(person1, person2):
     """Calcule la distance de Manhattan en ignorant les valeurs 'None'."""
     communs = {item for item in person1 if item in person2 and person1[item] is not None and person2[item] is not None}
@@ -30,6 +29,7 @@ def sim_distanceManhattan(person1, person2):
 
     distance = sum(abs(person1[item] - person2[item]) for item in communs)
     return distance
+
 
 def sim_distanceEuclidienne(person1, person2):
     """Calcule la distance Euclidienne en ignorant les valeurs 'None'."""
@@ -41,11 +41,15 @@ def sim_distanceEuclidienne(person1, person2):
     sum_of_squares = sum((person1[item] - person2[item]) ** 2 for item in communs)
     return math.sqrt(sum_of_squares)
 
-# Test des fonctions de distance
-print("Distance Manhattan entre Lisa Rose et Gene Seymour:", sim_distanceManhattan(critiques['Lisa Rose'], critiques['Gene Seymour']))
-print("Distance Euclidienne entre Lisa Rose et Gene Seymour:", sim_distanceEuclidienne(critiques['Lisa Rose'], critiques['Gene Seymour']))
 
-#2(a)(ii)
+# Test des fonctions de distance
+print("Distance Manhattan entre Lisa Rose et Gene Seymour:",
+      sim_distanceManhattan(critiques['Lisa Rose'], critiques['Gene Seymour']))
+print("Distance Euclidienne entre Lisa Rose et Gene Seymour:",
+      sim_distanceEuclidienne(critiques['Lisa Rose'], critiques['Gene Seymour']))
+
+
+# 2(a)(ii)
 def computeNearestNeighbor(nouveauCritique, critiques):
     """Retourne une liste triée des critiques proches de nouveauCritique basée sur la distance de Manhattan."""
     distances = []
@@ -57,6 +61,7 @@ def computeNearestNeighbor(nouveauCritique, critiques):
     # Tri des distances par ordre croissant (les critiques les plus proches en premier)
     distances.sort()
     return distances
+
 
 def recommend(nouveauCritique, critiques):
     """Recommande des films à l'utilisateur nouveauCritique en fonction des goûts des autres critiques."""
@@ -78,11 +83,13 @@ def recommend(nouveauCritique, critiques):
 
     return recommendations
 
+
 # Test de la recommandation pour Toby
 recommandations = recommend('Toby', critiques)
 print("Film recommandé à Toby :", recommandations)
 
-#2(b)(i)
+
+# 2(b)(i)
 def Bestrecommend(nouveauCritique, critiques):
     """Propose une recommandation à Anne en utilisant un score global pondéré."""
     totals = {}
@@ -107,7 +114,8 @@ def Bestrecommend(nouveauCritique, critiques):
         # Parcourir les films notés par ce critique
         for film in critiques[critique]:
             # Seuls les films non vus par Anne sont intéressants
-            if (film not in critiques[nouveauCritique] or critiques[nouveauCritique][film] == 0 or critiques[nouveauCritique][film] is None) and critiques[critique][film] is not None :
+            if (film not in critiques[nouveauCritique] or critiques[nouveauCritique][film] == 0 or
+                critiques[nouveauCritique][film] is None) and critiques[critique][film] is not None:
                 # Ajouter le score pondéré au total
                 if film not in totals:
                     totals[film] = 0
@@ -126,12 +134,13 @@ def Bestrecommend(nouveauCritique, critiques):
 
     return rankings
 
+
 # Test de la recommandation pondérée pour Anne
 recommandations = Bestrecommend('Anne', critiques)
 print("Film recommandé à Anne avec score pondéré :", recommandations[0])
 
 
-#2(b)(ii)
+# 2(b)(ii)
 def OtherBestrecommend(nouveauCritique, critiques):
     """Propose une recommandation en utilisant un score global pondéré avec 1 / (1 + distance^2)."""
     totals = {}
@@ -156,7 +165,8 @@ def OtherBestrecommend(nouveauCritique, critiques):
         # Parcourir les films notés par ce critique
         for film in critiques[critique]:
             # Seuls les films non vus par Anne sont intéressants
-            if (film not in critiques[nouveauCritique] or critiques[nouveauCritique][film] == 0 or critiques[nouveauCritique][film] is None) and critiques[critique][film] is not None :
+            if (film not in critiques[nouveauCritique] or critiques[nouveauCritique][film] == 0 or
+                critiques[nouveauCritique][film] is None) and critiques[critique][film] is not None:
                 # Ajouter le score pondéré au total
                 if film not in totals:
                     totals[film] = 0
@@ -175,15 +185,14 @@ def OtherBestrecommend(nouveauCritique, critiques):
 
     return rankings
 
+
 # Test de la recommandation pondérée avec 1 / (1 + distance^2)
 recommandations = OtherBestrecommend('Anne', critiques)
 print("Film recommandé à Anne avec la nouvelle pondération :", recommandations[0])
 
 
-#(3)
+# (3)
 def pearson(person1, person2):
-    """Calcule le coefficient de corrélation de Pearson en ignorant les valeurs 'None'."""
-    # Trouver les films en commun qui ne sont pas None
     communs = [film for film in person1 if film in person2 and person1[film] is not None and person2[film] is not None]
 
     n = len(communs)
@@ -191,32 +200,29 @@ def pearson(person1, person2):
     # Si pas de films en commun, retourner 0
     if n == 0:
         return 0
-
-    # Calcul des sommes et des carrés
-    sum1 = sum(person1[film] for film in communs)
-    sum2 = sum(person2[film] for film in communs)
-
-    sum1_sq = sum(person1[film] ** 2 for film in communs)
-    sum2_sq = sum(person2[film] ** 2 for film in communs)
-
-    p_sum = sum(person1[film] * person2[film] for film in communs)
-
-    # Calcul du coefficient Pearson
-    num = p_sum - (sum1 * sum2 / n)
-
-    den_sq_1 = (sum1_sq - sum1 ** 2 / n)
-    den_sq_2 = (sum2_sq - sum2 ** 2 / n)
-
-    # Assurer que le dénominateur est positif avant de prendre la racine carrée
-    if den_sq_1 <= 0 or den_sq_2 <= 0:
+    sum_xy = 0
+    sum_x = 0
+    sum_y = 0
+    sum_x2 = 0
+    sum_y2 = 0
+    n = 0
+    for key in person1:
+        if key in person2 and person1[key] is not None and person2[key] is not None:
+            n += 1
+            x = person1[key]
+            y = person2[key]
+            sum_xy += x * y
+            sum_x += x
+            sum_y += y
+            sum_x2 += x ** 2
+            sum_y2 += y ** 2
+    denominator = math.sqrt(sum_x2 - (sum_x ** 2) / n) * \
+                  math.sqrt(sum_y2 - (sum_y ** 2) / n)
+    if denominator == 0:
         return 0
+    else:
+        return (sum_xy - (sum_x * sum_y) / n) / denominator
 
-    den = (den_sq_1 * den_sq_2) ** 0.5
-
-    if den == 0:
-        return 0
-
-    return num / den
 
 def PearsonRecommend(nouveauCritique, critiques):
     """Propose une recommandation à Anne en utilisant le coefficient de corrélation de Pearson."""
@@ -257,12 +263,15 @@ def PearsonRecommend(nouveauCritique, critiques):
 
     return rankings
 
+
 # Test de la recommandation basée sur le coefficient de Pearson pour Anne
 recommandations = PearsonRecommend('Anne', critiques)
 print("Film recommandé à Anne avec le coefficient de Pearson :", recommandations[0])
 
-#(4)
+# (4)
 import math
+
+
 def cosinus_similarity(person1, person2):
     """Calcule la similarité cosinus en ignorant les valeurs 'None'."""
     communs = [film for film in person1 if film in person2 and person1[film] is not None and person2[film] is not None]
@@ -279,6 +288,7 @@ def cosinus_similarity(person1, person2):
         return 0
 
     return sum_xy / denominator
+
 
 def CosinusRecommend(nouveauCritique, critiques):
     """Propose une recommandation à Anne en utilisant la similarité cosinus."""
@@ -319,15 +329,22 @@ def CosinusRecommend(nouveauCritique, critiques):
 
     return rankings
 
+
 # Test de la recommandation basée sur la similarité cosinus pour Anne
 recommandations = CosinusRecommend('Anne', critiques)
 print("Film recommandé à Anne avec la similarité cosinus :", recommandations[0])
 
-
-#(5)
+# (5)
 # Générer des films et critiques
-films = [f'Film_{i}' for i in range(1, 21)]
-critiques = [f'Critique_{i}' for i in range(1, 16)]
+films = ['The Godfather', 'Pulp Fiction', 'Schindler\'s List', 'Casablanca', 'Citizen Kane',
+         'The Shawshank Redemption', '12 Angry Men', 'Goodfellas', 'The Dark Knight',
+         'Apocalypse Now', 'Forrest Gump', 'Inception', 'The Matrix', 'Star Wars', 'Jurassic Park',
+         'Titanic', 'The Silence of the Lambs', 'Saving Private Ryan', 'The Lord of the Rings', 'Avatar']
+
+critiques = ['Roger Ebert', 'Pauline Kael', 'A.O. Scott', 'Peter Travers', 'Leonard Maltin',
+             'Gene Siskel', 'Richard Roeper', 'David Denby', 'Manohla Dargis', 'Anthony Lane',
+             'Mark Kermode', 'James Berardinelli', 'Rex Reed', 'Christy Lemire', 'Owen Gleiberman']
+
 
 # Générer un tableau d'évaluations aléatoires avec entre 30% et 60% de cases vides
 def generer_matrice_critique(films, critiques, utilisateur_cible, min_vide=0.3, max_vide=0.6):
@@ -355,8 +372,10 @@ def generer_matrice_critique(films, critiques, utilisateur_cible, min_vide=0.3, 
 # Calculer le pourcentage de cases vides
 def pourcentagecasesvides(matrice):
     total_cases = len(matrice) * len(next(iter(matrice.values())))  # Nombre total de cases
-    cases_vides = sum(1 for critique in matrice for film in matrice[critique] if matrice[critique][film] is None)  # Cases vides
+    cases_vides = sum(
+        1 for critique in matrice for film in matrice[critique] if matrice[critique][film] is None)  # Cases vides
     return (cases_vides / total_cases) * 100
+
 
 # Fonction pour recommander des films basés sur une méthode de similarité
 def recommander_film(nouveauCritique, critiques, methode_similarite):
@@ -390,15 +409,16 @@ def recommendations_identiques(recommandations):
             return False
     return True
 
+
 # Utilisateur cible pour la recommandation
-utilisateur_cible = 'Critique_15'
+utilisateur_cible = 'Owen Gleiberman'
 
 # Boucle pour générer des recommandations jusqu'à ce qu'elles soient toutes identiques
 recommandations_identiques_flag = False
 iteration = 0
 while not recommandations_identiques_flag:
     iteration += 1
-    matrice_critique = generer_matrice_critique(films, critiques,utilisateur_cible)
+    matrice_critique = generer_matrice_critique(films, critiques, utilisateur_cible)
 
     # Calcul du pourcentage de cases vides
     pourcentage_vides = pourcentagecasesvides(matrice_critique)
@@ -410,7 +430,6 @@ while not recommandations_identiques_flag:
     recommandation_cosinus = recommander_film(utilisateur_cible, matrice_critique, cosinus_similarity)
     recommandation_BestRecommend = Bestrecommend(utilisateur_cible, matrice_critique)
     recommandation_OtherBestRecommend = OtherBestrecommend(utilisateur_cible, matrice_critique)
-    print(matrice_critique[utilisateur_cible])
 
     # Stocker toutes les recommandations dans une liste
     toutes_recommandations = [
@@ -426,7 +445,7 @@ while not recommandations_identiques_flag:
     recommandations_identiques_flag = recommendations_identiques(toutes_recommandations)
 
 
-def export_data_to_excel(matrice_critique, recommandations, utilisateur_cible,name):
+def export_data_to_excel(matrice_critique, recommandations, utilisateur_cible, name):
     wb = Workbook()
 
     # Create sheet for matrice_critique
@@ -481,7 +500,7 @@ def export_data_to_excel(matrice_critique, recommandations, utilisateur_cible,na
             sheet.column_dimensions[column_cells[0].column_letter].width = length + 2
 
     # Save the workbook
-    wb.save(name+".xlsx")
+    wb.save(name + ".xlsx")
 
 
 # Affichage des résultats finaux
@@ -504,7 +523,7 @@ recommandations = {
     "OtherBestRecommend": recommandation_OtherBestRecommend
 }
 
-export_data_to_excel(matrice_critique, recommandations, utilisateur_cible,"recommandation-identiques")
+export_data_to_excel(matrice_critique, recommandations, utilisateur_cible, "recommandation-identiques")
 
 
 def explication_simple(film_recommande):
@@ -515,6 +534,7 @@ def explication_simple(film_recommande):
     )
     return explication
 
+
 # Génération d'une explication simple pour l'un des films recommandés
 film_recommande = recommandation_manhattan[0][1]
 explication = explication_simple(film_recommande)
@@ -522,19 +542,21 @@ print("\nExplication pour l'utilisateur :")
 print(explication)
 
 
-#(6)
+# (6)
 
 # Fonction pour vérifier si toutes les recommandations sont différentes
 def recommendations_differentes(recommandations):
-    films_recommandes = [rec[0][1] for rec in recommandations if rec]  # Prendre le premier film recommandé de chaque méthode
+    films_recommandes = [rec[0][1] for rec in recommandations if
+                         rec]  # Prendre le premier film recommandé de chaque méthode
     return len(set(films_recommandes)) == len(films_recommandes)  # Vérifier si tous les films sont distincts
+
 
 # Boucle pour générer des recommandations jusqu'à ce qu'elles soient toutes différentes
 recommandations_differentes_flag = False
 iteration = 0
 while not recommandations_differentes_flag:
     iteration += 1
-    matrice_critique = generer_matrice_critique(films, critiques,utilisateur_cible)
+    matrice_critique = generer_matrice_critique(films, critiques, utilisateur_cible)
 
     # Calcul du pourcentage de cases vides
     pourcentage_vides = pourcentagecasesvides(matrice_critique)
@@ -544,8 +566,8 @@ while not recommandations_differentes_flag:
     recommandation_euclidienne = recommander_film(utilisateur_cible, matrice_critique, sim_distanceEuclidienne)
     recommandation_pearson = recommander_film(utilisateur_cible, matrice_critique, pearson)
     recommandation_cosinus = recommander_film(utilisateur_cible, matrice_critique, cosinus_similarity)
-    recommandation_bestrecommend = Bestrecommend(utilisateur_cible,matrice_critique)
-    recommandation_otherbestrecommend = OtherBestrecommend(utilisateur_cible,matrice_critique)
+    recommandation_bestrecommend = Bestrecommend(utilisateur_cible, matrice_critique)
+    recommandation_otherbestrecommend = OtherBestrecommend(utilisateur_cible, matrice_critique)
 
     # Stocker toutes les recommandations dans une liste
     toutes_recommandations = [
@@ -576,11 +598,7 @@ recommandations = {
     "Euclidienne": recommandation_euclidienne,
     "Pearson": recommandation_pearson,
     "Cosinus": recommandation_cosinus,
-    "BestRecommend": recommandation_BestRecommend,
-    "OtherBestRecommend": recommandation_OtherBestRecommend
+    "BestRecommend": recommandation_bestrecommend,
+    "OtherBestRecommend": recommandation_otherbestrecommend
 }
-export_data_to_excel(matrice_critique, recommandations, utilisateur_cible,"recommandation-differentes")
-
-
-
-
+export_data_to_excel(matrice_critique, recommandations, utilisateur_cible, "recommandation-differentes")
